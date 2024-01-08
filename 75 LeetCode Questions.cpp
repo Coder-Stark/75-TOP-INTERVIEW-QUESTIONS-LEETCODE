@@ -400,3 +400,148 @@ Input: chars = ["a","b","b","b","b","b","b","b","b","b","b","b","b"]
 Output: Return 4, and the first 4 characters of the input array should be: ["a","b","1","2"].
 Explanation: The groups are "a" and "bbbbbbbbbbbb". This compresses to "ab12".
 */
+
+
+//10. MOVE ZEROES                                                          {T.C = O(N), S.C = O(1)}
+/*
+Two pointer appraoch 1st pointer use to keep track of non zero element another when is simple iteration , if(nums[j] is not 0) then it will swap
+with nums[i] it ensures that nonzero element shift ot front.
+*/
+class Solution {
+public:
+    void moveZeroes(vector<int>& nums) {
+        int n = nums.size();
+        int i = 0;                                  //placing non zero element to front
+        int j = 0;                                  //for iteration
+        while(j < n){
+            if(nums[j] != 0){                      
+                swap(nums[i], nums[j]);            //nonzero element shift to front
+                i++;
+            }
+            j++;
+        }
+    }
+};
+/*
+Example 1:
+Input: nums = [0,1,0,3,12]
+Output: [1,3,12,0,0]
+
+Example 2:
+Input: nums = [0]
+Output: [0]
+*/
+
+
+//11. IS SUBSEQUENCE                                                    {T.C = O(N), S.C = O(1)}
+/*
+Initialize pointer to both string and iterate if same char then move first and second pointer else move second pointer at last check the
+first string is completed or not.
+*/
+class Solution {
+public:
+    bool isSubsequence(string s, string t) {
+        int n = s.size();
+        int m = t.size();
+        int i = 0;                      //initial pointer of s
+        int j = 0;                      //initial pointer of t
+        while(i < n && j < m){
+            if(s[i] == t[j]){
+                i++;
+            }
+            j++;
+        }
+        return i == s.size();           //string s is exhausted or not
+    }
+};
+/*
+Example 1:
+Input: s = "abc", t = "ahbgdc"
+Output: true
+
+Example 2:
+Input: s = "axc", t = "ahbgdc"
+Output: false
+*/
+
+
+//12. CONTAINER WITH MOST WATER                                                     {T.C = O(N), S.C = O(1)}
+/*
+Intiailize two pointers first and last then find height(min(left, right)) and width = right-left thnen find area = l*b
+take maxArea = max(maxArea, currArea), if(h[left] <= h[right]) left++ else r--.
+*/
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int n = height.size();
+        int left = 0, right = n-1;
+        int maxWaterArea = 0;
+        while(left < right){
+            int h = min(height[left], height[right]);         //water can fill only lowest height of container
+            int width = right-left;
+            int currWaterArea = h * width;                    //area = l * b
+            maxWaterArea = max(maxWaterArea, currWaterArea);
+            if(height[left] <= height[right]){
+                left++;
+            }else{
+                right--;
+            }
+        }
+        return maxWaterArea;
+    }
+};
+/*
+Example 1:
+Input: height = [1,8,6,2,5,4,8,3,7]
+Output: 49
+Explanation: The above vertical lines are represented by array [1,8,6,2,5,4,8,3,7]. In this case, the max area of water (blue section) the container can contain is 49.
+
+Example 2:
+Input: height = [1,1]
+Output: 1
+*/
+
+
+//13. MAX NUMBER OF K-SUM PAIRS                                            {T.C = O(N*LOGN), S.C = O(1)}
+/*
+First sort the array then use two pointer approach if sum of nums[i]+nums[j] == k then increase count else if less then i++ else j--.
+*/
+class Solution {
+public:
+    int maxOperations(vector<int>& nums, int k) {
+        int n = nums.size();
+        int i = 0; 
+        int j = n-1;
+        int opCount = 0;
+
+        sort(nums.begin(), nums.end());
+        
+        while(i < j){
+            if(nums[i]+nums[j] == k){
+                opCount++;
+                i++, j--;
+            }else if(nums[i]+nums[j] < k){
+                i++;
+            }else{
+                j--;
+            }
+        }
+        return opCount;
+    }
+};
+/*
+Example 1:
+Input: nums = [1,2,3,4], k = 5
+Output: 2
+Explanation: Starting with nums = [1,2,3,4]:
+- Remove numbers 1 and 4, then nums = [2,3]
+- Remove numbers 2 and 3, then nums = []
+There are no more pairs that sum up to 5, hence a total of 2 operations.
+
+Example 2:
+Input: nums = [3,1,3,4,3], k = 6
+Output: 1
+Explanation: Starting with nums = [3,1,3,4,3]:
+- Remove the first two 3's, then nums = [1,4,3]
+There are no more pairs that sum up to 6, hence a total of 1 operation.
+*/
