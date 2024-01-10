@@ -738,3 +738,32 @@ Input: nums = [1,1,1]
 Output: 2
 Explanation: You must delete one element.
 */
+
+
+/*------------------------------------------------------------PREFIX SUM--------------------------------------------------------------*/
+//18. FIND THE HIGHEST ALTITUDE                                                  {T.C = O(N), S.C = O(N)}
+/*
+Take a vector then store prefix sum of there by pushing element and prefix.back() after that return max of the prefix vector
+*/
+class Solution {
+public:
+    int largestAltitude(vector<int>& gain) {
+        int n = gain.size();
+        vector<int>prefixSum(n, 0);
+        for(auto it : gain){
+            prefixSum.push_back(prefixSum.back() + it);
+        }
+        return *max_element(prefixSum.begin(), prefixSum.end());
+    }
+};
+/*
+Example 1:
+Input: gain = [-5,1,5,0,-7]
+Output: 1
+Explanation: The altitudes are [0,-5,-4,1,1,-6]. The highest is 1.
+
+Example 2:
+Input: gain = [-4,-3,-2,-1,4,3,2]
+Output: 0
+Explanation: The altitudes are [0,-4,-7,-9,-10,-6,-3,-1]. The highest is 0.
+*/
