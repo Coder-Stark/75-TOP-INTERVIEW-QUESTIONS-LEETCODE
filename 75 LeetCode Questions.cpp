@@ -767,3 +767,54 @@ Input: gain = [-4,-3,-2,-1,4,3,2]
 Output: 0
 Explanation: The altitudes are [0,-4,-7,-9,-10,-6,-3,-1]. The highest is 0.
 */
+
+
+//19. FIND PIVOT INDEX                                                {T.C = O(N), S.C = O(1)}
+/*
+First find the total sum of the array, then iterate again decrease sum = sum-a[i] if it is equal to prefix sum then return the index else
+increase the prefix sum else return -1.
+*/
+class Solution {
+public:
+    int pivotIndex(vector<int>& nums) {
+        int n = nums.size();
+        int sum = 0;
+        int prefixSum = 0;
+
+        for(int i = 0 ; i < n ; i++){
+            sum += nums[i];
+        }
+
+        for(int i = 0 ; i < n ; i++){
+            sum = sum-nums[i];
+            if(prefixSum == sum){                   //left sum == right sum (return index)
+                return i;
+            }
+            prefixSum += nums[i];
+        }
+        return -1;
+    }
+};
+/*
+Example 1:
+Input: nums = [1,7,3,6,5,6]
+Output: 3
+Explanation:
+The pivot index is 3.
+Left sum = nums[0] + nums[1] + nums[2] = 1 + 7 + 3 = 11
+Right sum = nums[4] + nums[5] = 5 + 6 = 11
+
+Example 2:
+Input: nums = [1,2,3]
+Output: -1
+Explanation:
+There is no index that satisfies the conditions in the problem statement.
+
+Example 3:
+Input: nums = [2,1,-1]
+Output: 0
+Explanation:
+The pivot index is 0.
+Left sum = 0 (no elements to the left of index 0)
+Right sum = nums[1] + nums[2] = 1 + -1 = 0
+*/
