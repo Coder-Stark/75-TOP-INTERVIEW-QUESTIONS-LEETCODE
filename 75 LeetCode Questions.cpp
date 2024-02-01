@@ -60,6 +60,9 @@ merged: a p b q c   d
 */
 
 
+//for remove error(line)
+int gcd(int a, int b);
+//--------------------
 //02. GREATEST COMMON DIVISOR OF STRINGS                                           {T.C = O(N), S.C = O(N)}
 /*
 Using Commutative property of math (3+6 = 9 == 6+3 = 9) ,it implies that the strings have a common divisor ,then extracts a substring from
@@ -1979,6 +1982,7 @@ Output: 2
 */
 
 
+/*-----------------------------------------------------------BINARY SEARCH TREE(BST) -----------------------------------------------*/
 //41. SEARCH IN A BINARY SEARCH TREE                                      {T.C = O(N), S.C = O(H)}
 /*
 Simply check base case if root not exist return null if (root->val == val) return root(return corresponding tree).
@@ -2813,6 +2817,10 @@ The total hiring cost is 4.
 
 
 /*---------------------------------------------------- BINARY SEARCH -------------------------------------------------*/
+//for remove error(line)
+int guess(int a);
+//--------------------
+
 //53. GUESS NUMBER HIGHER OR LOWER                                  {T.C = O(LOGN), S.C = O(1)}
 /*
 First there is Pre defined guess function with output(0, 1, -1) , use binary search and find the location of guess number
@@ -3753,3 +3761,329 @@ Example 3:
 Input: a = 1, b = 2, c = 3
 Output: 0
 */
+
+
+/*--------------------------------------------------- TRIE ------------------------------------------------------------*/
+//70.  IMPLEMENT TRIE (PREFIX TREE)                    {T.C = O(N + N), S.C = O(N*M {no. of word , lenghth of word})}
+/*
+//trie's main functions = insert, search, delete
+//first we have to create a struct (isEndOfWord, child array)
+//second we have to write function for creating new node for an trie
+//initialize trieNode with root
+//write for insert and with some upgradation search and startswith fucntion made
+*/
+class Trie {
+public:
+    struct trieNode{                   //basic requirement of trie is endofword and child
+        bool isEndOfWord;
+        trieNode *child[26];
+    };
+
+    trieNode *getNode(){              //for making newnode in trie
+        trieNode* newNode = new trieNode();
+
+        newNode->isEndOfWord = false;     //endofword should be false for new node
+        for(int i = 0 ; i < 26 ; i++){
+            newNode->child[i] = NULL;     //creating empty vector
+        }
+        return newNode;
+    }
+
+    trieNode* root;
+
+    Trie() {
+        root = getNode();
+    }
+    
+    //if we create insert then search and starts with is just slight updation of code
+    void insert(string word) {  //apple
+        trieNode* crawler = root;             //crawler work as iterator
+        for(int i = 0 ; i < word.length() ; i++){
+            char ch = word[i];
+            int idx = ch-'a';
+
+            if(crawler->child[idx] == NULL){
+                crawler->child[idx] = getNode();  //'a'
+            }
+            crawler = crawler->child[idx];       //move forward
+        }
+        crawler->isEndOfWord = true;      //'e' reach end
+    }
+    
+    bool search(string word) {  //'apple'
+        trieNode* crawler = root;             //crawler work as iterator
+        for(int i = 0 ; i < word.length() ; i++){
+            char ch = word[i];
+            int idx = ch-'a';
+
+            if(crawler->child[idx] == NULL){    //character in the word being searched for doesn't exist in the trie
+                return false;
+            }
+            crawler = crawler->child[idx];       //move forward
+        }
+        if(crawler != NULL && crawler->isEndOfWord == true){  //'e'
+            return true;
+        }
+        return false;
+    }
+    
+    bool startsWith(string prefix) { //'app'
+        trieNode* crawler = root;             //crawler work as iterator
+        int i = 0;
+        for(i = 0 ; i < prefix.length() ; i++){    //same as search just word => prefix
+            char ch = prefix[i];
+            int idx = ch-'a';
+
+            if(crawler->child[idx] == NULL){    //character in the word being searched for doesn't exist in the trie
+                return false;
+            }
+            crawler = crawler->child[idx];       //move forward
+        }
+        if(i == prefix.length()){
+            return true;
+        }
+        return false;
+    }
+};
+/*
+Example 1:
+Input
+["Trie", "insert", "search", "search", "startsWith", "insert", "search"]
+[[], ["apple"], ["apple"], ["app"], ["app"], ["app"], ["app"]]
+Output
+[null, null, true, false, true, null, true]
+Explanation
+Trie trie = new Trie();
+trie.insert("apple");
+trie.search("apple");   // return True
+trie.search("app");     // return False
+trie.startsWith("app"); // return True
+trie.insert("app");
+trie.search("app");     // return True
+*/
+
+
+//71. SEARCH SUGGESTIONS SYSTEMS
+//USING SORTING AND BINARY SEARCH                                           {T.C = O(N*LOGN), S.C = O(N)}
+/*
+First sort the products, then iterate to searchword string prefix += it, find the index of lower_bound and store in start, push empty vector in ans
+then iterate with condition(start ; atmost 3times && prefix match ; i++ ) , ans.back().push_back(prod) , initialize bsStart with start(for efficency)'
+finally return ans.
+*/
+class Solution {
+public:
+    vector<vector<string>> suggestedProducts(vector<string>& products, string searchWord) {
+        vector<vector<string>>ans;
+        sort(products.begin(), products.end());
+        int n = products.size();
+        int start = 0, bsStart = 0;
+        string prefix;
+        for(auto it : searchWord){
+            prefix += it;
+            start = lower_bound(products.begin()+bsStart, products.end(), prefix) - products.begin();  //gives index
+            ans.push_back({});
+            // it iterates at most three times && prefix of the product matches the current value of prefix
+            for(int i = start ; i < min(start+3, n) && !products[i].compare(0, prefix.length(), prefix); i++){
+                ans.back().push_back(products[i]);
+            }
+            bsStart = start;
+        }
+        return ans;
+    }
+};
+/*
+Example 1:
+Input: products = ["mobile","mouse","moneypot","monitor","mousepad"], searchWord = "mouse"
+Output: [["mobile","moneypot","monitor"],["mobile","moneypot","monitor"],["mouse","mousepad"],["mouse","mousepad"],["mouse","mousepad"]]
+Explanation: products sorted lexicographically = ["mobile","moneypot","monitor","mouse","mousepad"].
+After typing m and mo all products match and we show user ["mobile","moneypot","monitor"].
+After typing mou, mous and mouse the system suggests ["mouse","mousepad"].
+
+Example 2:
+Input: products = ["havana"], searchWord = "havana"
+Output: [["havana"],["havana"],["havana"],["havana"],["havana"],["havana"]]
+Explanation: The only word "havana" will be always suggested while typing the search word.
+*/
+
+
+/*------------------------------------------------- INTERVALS ---------------------------------------------------------*/
+//72. NON-OVERLAPPING INTERVALS                                        {T.C = O(N*LOGN), S.C = O(1)}
+/*
+First sort the intervals on the basis of upper bound, then take count(initial 1) and end (starting interval), traverse the 
+intervals if curr is greater then end then update end = intervals and count++(count of unique intervals {not matched})
+return n-count(gives matched or count of removal intervals).
+*/
+class Solution {
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        int n = intervals.size();
+
+        auto lambda = [&](auto &a, auto &b){                 
+            return a[1] < b[1];
+        };
+        sort(intervals.begin(), intervals.end(), lambda);       //sort on the basis of upper bound
+        
+        int count = 1;                                          //initial count should 1
+        int end = intervals[0][1];
+        for(int i = 1 ; i < n; i++){
+            if(intervals[i][0] >= end){
+                end = intervals[i][1];
+                count++;
+            }
+        }
+        return n-count;                                        //for count require removable element                   
+    }
+};
+/*
+Example 1:
+Input: intervals = [[1,2],[2,3],[3,4],[1,3]]
+Output: 1
+Explanation: [1,3] can be removed and the rest of the intervals are non-overlapping.
+
+Example 2:
+Input: intervals = [[1,2],[1,2],[1,2]]
+Output: 2
+Explanation: You need to remove two [1,2] to make the rest of the intervals non-overlapping.
+
+Example 3:
+Input: intervals = [[1,2],[2,3]]
+Output: 0
+Explanation: You don't need to remove any of the intervals since they're already non-overlapping.
+*/
+
+
+//73. MINIMUM NUMBER OF ARROWS TO BURST BALLOONS                    {T.C = O(N*LOGN), S.C = O(1)}
+/*
+First sort the points on the basis of upper bound, then take count of arrow(initial 1) and end (starting interval), traverse the 
+intervals if curr is greater then end then update end = points and count++(count of unique intervals {not matched})
+return count of arrow.
+*/
+class Solution {
+public:
+    int findMinArrowShots(vector<vector<int>>& points) {
+        //base case
+        if(points.size() == 0){
+            return 0;
+        }
+
+        auto lambda = [&](auto &a, auto &b){
+            return a[1] < b[1];
+        };
+        sort(points.begin(), points.end(), lambda);     //sort on the basis of upper bound of each interval
+
+        int arrow = 1;                                   //1 arrow always required to burst 1 or > ballon
+        int end = points[0][1];                          //take 1st interval
+
+        for(int i = 1 ; i < points.size() ; i++){
+            if(points[i][0] > end){                     //lower bound of interval  > end
+                arrow++;
+                end = points[i][1];
+            }
+        }
+        return arrow;
+    }
+};
+/*
+Example 1:
+Input: points = [[10,16],[2,8],[1,6],[7,12]]
+Output: 2
+Explanation: The balloons can be burst by 2 arrows:
+- Shoot an arrow at x = 6, bursting the balloons [2,8] and [1,6].
+- Shoot an arrow at x = 11, bursting the balloons [10,16] and [7,12].
+
+Example 2:
+Input: points = [[1,2],[3,4],[5,6],[7,8]]
+Output: 4
+Explanation: One arrow needs to be shot for each balloon for a total of 4 arrows.
+
+Example 3:
+Input: points = [[1,2],[2,3],[3,4],[4,5]]
+Output: 2
+Explanation: The balloons can be burst by 2 arrows:
+- Shoot an arrow at x = 2, bursting the balloons [1,2] and [2,3].
+- Shoot an arrow at x = 4, bursting the balloons [3,4] and [4,5].
+*/
+
+
+/*---------------------------------------- MONOTONIC STACK(INCREASING STACK) -------------------------------------------*/
+//74. DAILY TEMPRATURES                                          {T.C = O(N*LOGN), S.C = O(N)}
+/*
+Take an stack, traverse the vector(tempratures) , while(st.empty() && element > element[stk.top{index}]) , prevIdx = st.top()
+put ans[prevIdx] = i-prevIdx, then push i in stack finally return ans.
+*/
+class Solution {
+public:
+    vector<int> dailyTemperatures(vector<int>& temperatures) {
+        int n = temperatures.size();
+        vector<int>ans(n);
+        int count = 0;
+        stack<int>stk;
+        for(int i = 0 ; i < n ; i++){
+            while(!stk.empty() && temperatures[i] > temperatures[stk.top()]){
+                int prevIdx = stk.top();
+                stk.pop();
+                ans[prevIdx] = i - prevIdx;
+            }
+            stk.push(i);
+        }
+        return ans;
+    }
+};
+/*
+Example 1:
+Input: temperatures = [73,74,75,71,69,72,76,73]
+Output: [1,1,4,2,1,1,0,0]
+
+Example 2:
+Input: temperatures = [30,40,50,60]
+Output: [1,1,1,0]
+
+Example 3:
+Input: temperatures = [30,60,90]
+Output: [1,1,0]
+*/
+
+
+//75. ONLINE STOCK SPAN                                        {T.C = O(N), S.C = O(N)}
+/*
+Take an stack(pair{price, span}) initialize span 1 (always) then traverse stack untill the !st.empty() && top <= price
+span += top.second(curr span) , push {price , span } in stack and finally return span.
+*/
+class StockSpanner {
+public:
+    stack<pair<int, int>>stk;                          //{price, span}
+    StockSpanner() {
+        
+    }
+    
+    int next(int price) {
+        int span = 1;                   //current span(minimum value before curr) is 1 
+        while(!stk.empty() && stk.top().first <= price){
+            span += stk.top().second;
+            stk.pop();
+        }
+        stk.push({price, span});
+        return span;
+    }
+};
+/*
+Example 1:
+Input
+["StockSpanner", "next", "next", "next", "next", "next", "next", "next"]
+[[], [100], [80], [60], [70], [60], [75], [85]]
+Output
+[null, 1, 1, 1, 2, 1, 4, 6]
+
+Explanation
+StockSpanner stockSpanner = new StockSpanner();
+stockSpanner.next(100); // return 1
+stockSpanner.next(80);  // return 1
+stockSpanner.next(60);  // return 1
+stockSpanner.next(70);  // return 2
+stockSpanner.next(60);  // return 1
+stockSpanner.next(75);  // return 4, because the last 4 prices (including today's price of 75) were less than or equal to today's price.
+stockSpanner.next(85);  // return 6
+*/
+
+
+/*------------------------------------------------== THE END ---------------------------------------------------------*/
