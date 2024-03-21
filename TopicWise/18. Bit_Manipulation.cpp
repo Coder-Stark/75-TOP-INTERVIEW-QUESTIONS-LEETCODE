@@ -20,9 +20,11 @@ public:
 };
 
 //INTUTIVE APPROACH                                             {T.C = O(N), S.C = O(N)}
+//INTUTIVE APPROACH                                             {T.C = O(N), S.C = O(N)}
 /*
 Take vector of (n+1) size , firstly check for base case if n == 0 return ans, then initialize ans[0] = 0 , apply for loop 1
-to <= n now, if it is odd */
+to <= n now, if it is odd then ans[i] = ans[i/2]+1 else ans[i] = ans[i/2] finally return ans.
+*/
 class Solution {
 public:
     vector<int> countBits(int n) {
